@@ -22,3 +22,189 @@ SQL 특징
 2. 비절차적 언어이다.
 3. 데이터를 정의 검색 조작한다.
 4. 표준언어이다.
+
+
+# 테이블 전체 내용 보기 
+SELECT * 
+from hr.employees;
+
+# 특정 열만 출력하기 
+SELECTemployee_id first_name,last_name
+from hr.employees;
+
+# 특정열을 기준으로 내림차순 정렬하여 출력하기 
+SELECT employee_id first_name,last_name
+from hr.employees
+ORDER BY employee_id DESC;
+
+# 고유한 하나씩만 출력 
+SELECT DISTINCT job_id
+from hr.employees
+#별칭설정 AS 생략가능 
+SELECT employee_id AS 사원번호, first_name AS 이름, last_name AS 성
+from hr.employees;
+# 열값들을 붙여서 하나의 셀에 출력 
+SELECT employee_id , first_name || ' ' || last_name
+from hr.employees;
+
+SELECT employee_id , first_name || ' ' || last_name,
+       email || '@' || 'company.com'
+from hr.employees;
+
+# 기본 열값을 이용한 계산
+SELECT employee_id , salary, salary+500, salary-100,(salary*1.1)/2 
+from hr.employees;
+
+SELECT employee_id , salary, 
+       salary+500 AS 급여, 
+       salary-100 AS 추가급여,
+       (salary*1.1)/2 AS 조정급여 
+from hr.employees;
+
+#where 절 행에서 원하는 값을 추출할떄 사용 
+SELECT *  
+from hr.employees
+WHERE employee_id = 100;
+
+# 글자로 찾을떄는 작은 따옴표 사용(대소문자 가림)
+SELECT *  
+from hr.employees
+WHERE first_name = 'David';
+
+# 부등호 연산자 
+SELECT *  
+from hr.employees
+WHERE employee_id >= 105;
+#BETWEEN a AND b  숫자 a부터 b까지 
+SELECT *  
+from hr.employees
+WHERE salary BETWEEN 10000 AND 20000;
+
+# IN 연산자 특정 항목들이 행들만 출력 
+SELECT *  
+from hr.employees
+WHERE salary  IN (10000,17000,24000);
+
+# LIKE 연산자 
+LIKE 연산자는 조회 조건 값이 명확하지 않을 떄 사용
+% 몇글자가 오던 글자가 없던 상관하지 않는다.
+_ 언더바는 글자 1개를 의미  
+SELECT *  
+from hr.employees
+WHERE job_id LIKE 'AD%' \
+
+SELECT *  
+from hr.employees
+WHERE job_id LIKE 'AD___' 
+- 언더바 3개는 3글자를 의미 
+
+#  IS NULL 값이 빈셀을 검색
+SELECT *  
+from hr.employees
+WHERE manager_id IS NULL;
+# 두개 조건을 동시 만족하는 값을 출력 AND 
+SELECT *  
+from hr.employees
+WHERE salary > 4000
+AND job_id = 'IT_PROG';
+
+# 샐러리는 4000이 반드시 넘고 IT_PROG와 FI_ACCOUNT 모두
+
+SELECT *  
+from hr.employees
+WHERE salary > 4000
+AND job_id = 'IT_PROG'
+OR job_id = 'FI_ACCOUNT';
+
+# 아닌 값들 만 출력 
+SELECT *  
+from hr.employees
+WHERE employee_id <> 105;
+
+ NOT 결과 값을 뒤집어 출력
+SELECT *  
+from hr.employees
+WHERE manager_id IS NOT NULL;
+
+단일행 함수 
+
+단일 행 함수는 한 번에 하나의 데이터를 처리하는 함수입니다. a1 값을 처리한 후 a2 값을 처리합니다. 
+반면 그룹 함수는 여러 건의 데이터를 동시에 처리하여 해당 그룹에 해당하는 결과를 반환합니다. 
+즉, d1, d2, d3, d4를 동시에 입력받아 함수를 거쳐 결괏값을 출력합니다. 
+그룹 함수는 주로 나중에 배울 GROUP BY 절과 함께 쓰이며 요약된 정보를 출력해야 할 때 유용합니다.
+
+Lower  전부 소문자 Upper 전부 대문자 INITCAP 첫글자만 대문자
+SUBSTR job_
+SELECT last_name,
+LOWER(last_name) LOWER적용, 
+UPPER(last_name) UPPER적용,
+email,
+INITCAP(email) INITCAP적용
+FROM  hr.employees;
+
+# 필요한 글자만 잘라내기(대상열, 부터, 몇개)
+SELECT job_id, SUBSTR(job_id, 1, 2) 적용결과
+FROM   hr.employees;
+
+원하는 글자로 찾아서 바꾸기(대상열, 찾을값, 바꿀값)
+SELECT job_id, REPLACE(job_id,'ACOUNT', ''ACCNT') 적용결과
+FROM   hr.employees;
+
+# lpad 왼쪽을 채우는데 자리수를 만들어 빈공간을 채운다.
+(대상열, 자리수, 빈공간을 채울 문자)
+SELECT first_name, LPAD(first_name, 12, '*') LPAD적용결과
+
+FROM   hr.employees;
+# RPAD 오른쪽을 채우는데 자리수를 만들어 빈공간을 채운다.
+SELECT first_name, RPAD(first_name, 12, ' ') RPAD적용결과
+
+FROM   hr.employees;
+
+# LTRIM/RTRIM 왼쪽/오른쪽 부터 찾아서 만나는 값을 삭제 
+주로 여백 삭제용으로 사용된다.
+
+SELECT job_id,
+
+       LTRIM(job_id, 'F') LTRIM적용결과,
+
+       RTRIM(job_id, 'T') RTRIM적용결과
+FROM   hr.employees;
+
+# 
+SELECT  'start' ||TRIM('     -space-    ')||'end'
+FROM dual;
+
+ROUND 반올림(대상열, 반올림자리)
+1. 소수점 아래 한자리까지
+-1 소수점위 한자리부터 
+SELECT salary,
+  salary/30 일급,
+  ROUND(salary/30, 0) 적용결과0,
+  ROUND(salary/30, 1) 적용결과1,
+  ROUND(salary/30, -1) 적용결과MINUS1
+ FROM   hr.employees;
+
+
+TRUNC 버림
+1 소수점 아래 한자리로
+-1 소수점위 한자리 부터 
+SELECT salary,
+  salary/30 일급,
+  TRUNC(salary/30, 0) 적용결과0,
+  TRUNC(salary/30, 1) 적용결과1,
+  TRUNC(salary/30, -1) 적용결과MINUS1
+ FROM   hr.employees;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
